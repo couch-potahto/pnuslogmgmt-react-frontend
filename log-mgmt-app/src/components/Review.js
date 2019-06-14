@@ -41,14 +41,14 @@ function Review(props) {
         {props.items.map(product => (
           <ListItem className={classes.listItem} key={product.ide}>
             <ListItemText primary={product.equipment_name} secondary={product.description + ' for ' + product.quantity + ' week '} />
-            <Typography variant="body2">{product.deposit} </Typography>
+            <Typography variant="body2">${product.deposit} </Typography>
           </ListItem>
         ))}
 
         <ListItem className={classes.listItem}>
           <ListItemText primary="Total" />
           <Typography variant="subtitle1" className={classes.total}>
-            {props.total}
+            ${props.total}
           </Typography>
         </ListItem>
       </List>

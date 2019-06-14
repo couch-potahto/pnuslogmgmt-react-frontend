@@ -14,10 +14,12 @@ import { connect } from 'react-redux';
 class App extends Component {
   render(){
     console.log(this.props.loggedIn)
+    
     return (
        <BrowserRouter>
             <div className="App">
               <div>{this.props.loggedIn ? <AdminAppBar/> : <Navbar/>}</div>
+              
                 <Switch>
                     <Route exact path="/" component={Home}/>
                     <Route exact path="/admin" component = {Admin}/>
@@ -26,7 +28,8 @@ class App extends Component {
                     <Route path="/cart" component={Cart}/>
                     <Route path="/Checkout" component={Checkout}/>
                   </Switch>
-              }
+              
+              
              </div>
        </BrowserRouter>
       
@@ -36,7 +39,8 @@ class App extends Component {
 
 const mapStateToProps = (state)=>{
     return{
-        loggedIn: state.adminReducer.logged_in
+        loggedIn: state.adminReducer.logged_in,
+        token: state.adminReducer.token
     }
 }
 

@@ -130,7 +130,8 @@ function LoginForm(props) {
 
 const mapStateToProps = (state)=>{
     return{
-        loggedIn: state.adminReducer.logged_in
+        loggedIn: state.adminReducer.logged_in,
+        token: state.adminReducer.token
 
     }
 }

@@ -73,6 +73,7 @@ function Checkout(props) {
   
   const handleNext = () => {
     if(activeStep == 1){
+      console.log(props.cart)
       props.submitRequest(props.cart)
     }
     setActiveStep(activeStep + 1);

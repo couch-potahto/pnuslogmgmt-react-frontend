@@ -18,6 +18,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
+import RequestDialog from './RequestDialog'
 //import Chart from './Chart';
 //import Deposits from './Deposits';
 import Loan from './Loan';
@@ -128,6 +129,7 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
+
       <CssBaseline />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
@@ -190,7 +192,9 @@ export default function Dashboard() {
               </Paper>
             </Grid>
           </Grid>
+          <RequestDialog/>
         </Container>
+
         <MadeWithLove />
       </main>
     </div>
