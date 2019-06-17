@@ -1,5 +1,5 @@
 import 'date-fns';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { addRequestApproverName, addApprovalCompletion, addDate, editRequest } from './actions/adminActions'
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -87,6 +87,11 @@ function RequestDialog(props) {
     console.log(props.token)
     props.editRequest(props.request_detail, props.token);
   }
+
+
+  useEffect(() => {
+    props.addDate(selectedDate, 'borrow')
+  })
 
   return (
     <div>
@@ -237,6 +242,7 @@ const mapDispatchToProps= (dispatch)=>{
         handleTick: (e)=>{dispatch(addApprovalCompletion(e.target.value))},
         addDate: (date, type)=>{dispatch(addDate(date, type))},
         editRequest: (e)=>{dispatch(editRequest(e))}
+        
     }
 }
 

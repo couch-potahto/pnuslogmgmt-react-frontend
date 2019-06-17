@@ -63,7 +63,7 @@ function Loan(props) {
               <TableCell>{row.borrower_name}</TableCell>
               <TableCell>{row.borrower_contact}</TableCell>
               <TableCell>{row.approved ? 'Approved' : 'Not Approved'}</TableCell>
-              <TableCell>{row.approved ? 'Returned' : 'Not Returned'}</TableCell>
+              <TableCell>{row.fulfilled ? 'Returned' : 'Not Returned'}</TableCell>
               <TableCell align="right">
                 <Button 
                   size="small"

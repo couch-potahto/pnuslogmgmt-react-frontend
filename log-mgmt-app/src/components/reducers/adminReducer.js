@@ -12,10 +12,6 @@ const initState = {
 
 }
 
-function isRequest(request, id){
-    return request.id == id
-}
-
 const adminReducer= (state = initState, action)=>{
     //INSIDE HOME COMPONENT
     console.log(action)
@@ -85,13 +81,20 @@ const adminReducer= (state = initState, action)=>{
     }
 
     if(action.type === EDIT_REQUEST_SUCCESS){
-        //const index = state.all_requests.data.findIndex(request => request['id'] == action.res.data['id'])
-        //let new_all_requests = state.all_requests
-        //new_all_requests.data[index] = action.res.data
-        //console.log(index)
+        console.log(action.res)
+        console.log('a')
+        console.log(state)
+        console.log('b')
+        const index = state.all_requests.data.findIndex(request => request['id'] == action.res.data['id'])
+        console.log(index)
+        let new_all_requests = {data:[]}
+        new_all_requests.data = [...state.all_requests.data]
+        console.log(new_all_requests.data[0])
+        new_all_requests.data[index] = action.res.data
+        console.log(new_all_requests)
         return{
             ...state,
-            //all_requests: new_all_requests,
+            all_requests: new_all_requests,
             request_detail: {'equipments':[]}
 
         }

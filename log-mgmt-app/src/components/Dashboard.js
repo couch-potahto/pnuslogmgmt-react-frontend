@@ -17,6 +17,7 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import { connect } from 'react-redux';
 import { mainListItems, secondaryListItems } from './listItems';
 import RequestDialog from './RequestDialog'
 //import Chart from './Chart';
@@ -116,7 +117,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Dashboard() {
+function Dashboard() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -200,3 +201,14 @@ export default function Dashboard() {
     </div>
   );
 }
+
+const mapStateToProps = (state)=>{
+  console.log(state.adminReducer)
+    return{
+        all_requests: state.adminReducer.all_requests,
+        token: state.adminReducer.token
+    }
+}
+
+
+export default connect(mapStateToProps)(Dashboard)

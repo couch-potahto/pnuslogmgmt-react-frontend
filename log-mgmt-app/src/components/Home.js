@@ -111,6 +111,7 @@ class Home extends React.Component{
 		axios.get('http://localhost:8000/core/api/equipment/all')
 			.then(res => {
 				const equip = res.data;
+				console.log(equip)
 				if(this.props.items.length===0){
 					this.setState({
 						equip: equip,
@@ -134,8 +135,10 @@ class Home extends React.Component{
 	}
 
 	render() {
+
 		if(this.props.all_eq.length > 0){
 		var equipmentList = this.props.all_eq.map((eq, index)=> {
+
 		return (
 		
 			<Grid item xs={6} sm={4} md={4}>
@@ -143,7 +146,7 @@ class Home extends React.Component{
 
 			  <CardContent>
 			  <Typography gutterBottom variant="h6" component="h5">
-			    {eq.equipment_name}
+			    {eq.equipment_name} 
 			  </Typography>
 			  <Typography variant="body2" color="textSecondary" component="p">
 			    {eq.description}
@@ -152,15 +155,27 @@ class Home extends React.Component{
 			    ${eq.deposit}
 			  </Typography>
 			  
+			  
 			  </CardContent>
 			  <CardActions>
-                  <Button 
-                    disabled={this.state.currentDisabled[index]}
+                  {!eq.on_loan && (
+                  	<Button 
+                    disabled={this.state.currentDisabled[index] || eq.on_loan}
                     fullWidth variant='outlined'
                     color="secondary"
                     onClick={()=>{this.handleClick(eq, index)}}>
                     <AddIcon />
                   </Button>
+                  )}
+                  {eq.on_loan && (
+                  	<Button 
+                    disabled={this.state.currentDisabled[index] || eq.on_loan}
+                    fullWidth variant='outlined'
+                    color="secondary"
+                    onClick={()=>{this.handleClick(eq, index)}}>
+                    On Loan
+                  </Button>
+                  )}
                 </CardActions>
 			</Card>
 			</Grid>
