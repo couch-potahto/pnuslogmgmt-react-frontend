@@ -31,7 +31,7 @@ function Loan(props) {
   const [data, setData] = useState({hits:[]})
 
   const openRequestDialog = (id) => {
-    
+    console.log(id)
     props.getRequestData(id, props.token)
   }
   

@@ -1,6 +1,7 @@
 import 'date-fns';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { addRequestApproverName, addApprovalCompletion, addDate, editRequest } from './actions/adminActions'
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -54,15 +55,22 @@ const useStyles = makeStyles(theme => ({
 
 function RequestDialog(props) {
   const [open, setOpen] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [returnDate, setReturnDate] = React.useState(new Date());
   const classes = useStyles();
 
   function handleClickOpen() {
     setOpen(true);
   }
 
-  function handleDateChange(date) {
+  function handleDateChangeBorrow(date) {
     setSelectedDate(date);
+    props.addDate(date, 'borrow');
+  }
+
+  function handleDateChangeReturn(date) {
+    setReturnDate(date);
+    props.addDate(date, 'return');
   }
 
   function handleClose() {
@@ -73,6 +81,12 @@ function RequestDialog(props) {
   const handleToggle = id => () => {
     console.log(id)
   };
+
+  const handleSubmit = (e) =>{
+    e.preventDefault()
+    console.log(props.token)
+    props.editRequest(props.request_detail, props.token);
+  }
 
   return (
     <div>
@@ -134,7 +148,7 @@ function RequestDialog(props) {
                   id="mui-pickers-date"
                   label="Date of Loan"
                   value={selectedDate}
-                  onChange={handleDateChange}
+                  onChange={handleDateChangeBorrow}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -145,8 +159,8 @@ function RequestDialog(props) {
                   margin="normal"
                   id="mui-pickers-date"
                   label="Date Returned"
-                  value={null}
-                  onChange={handleDateChange}
+                  value={returnDate}
+                  onChange={handleDateChangeReturn}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -165,18 +179,22 @@ function RequestDialog(props) {
                 fullWidth
                 id="firstName"
                 label="Approved By"
+                onChange = {(e) => props.handleApproverName(e)}
+                placeholder = {props.request_detail.approver_name}
                 autoFocus
               />
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={<Checkbox value="Approved" color="primary"/>}
+                onChange = {(e) => props.handleTick(e)}
                 label="Approved"
               />
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={<Checkbox value="Completed" color="primary"/>}
+                onChange = {(e) => props.handleTick(e)}
                 label="Completed"
               />
             </Grid>
@@ -186,6 +204,7 @@ function RequestDialog(props) {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick = {(e)=>handleSubmit(e)}
           >
             Sign Up
           </Button>
@@ -205,17 +224,20 @@ function RequestDialog(props) {
 }
 
 const mapStateToProps = (state)=>{
-  console.log(state.adminReducer)
     return{
         request_detail: state.adminReducer.request_detail,
         token: state.adminReducer.token
     }
 }
 
-/*const mapDispatchToProps = (dispatch)=>{
-  return bindActionCreators( {getRequestData}, dispatch);
-    /*return{
-        submitRequest: (cart)=>{dispatch(submitRequest(cart))}
+const mapDispatchToProps= (dispatch)=>{
+    
+    return{
+        handleApproverName: (e)=>{dispatch(addRequestApproverName(e.target.value))},
+        handleTick: (e)=>{dispatch(addApprovalCompletion(e.target.value))},
+        addDate: (date, type)=>{dispatch(addDate(date, type))},
+        editRequest: (e)=>{dispatch(editRequest(e))}
     }
-}*/
-export default connect(mapStateToProps)(RequestDialog)
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(RequestDialog)
