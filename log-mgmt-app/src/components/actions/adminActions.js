@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LOGIN_SUCCESS, GET_REQUEST_SUCCESS, REQUEST_DETAIL_SUCCESS, ADD_APPROVER, ADD_TICKS, ADD_DATE, EDIT_REQUEST_SUCCESS } from './action-types/admin-actions';
+import { LOGIN_SUCCESS, GET_REQUEST_SUCCESS, REQUEST_DETAIL_SUCCESS, ADD_APPROVER, ADD_TICKS, ADD_DATE, EDIT_REQUEST_SUCCESS, CLOSE_DIALOG, GET_APPROVED_SUCCESS, GET_COMPLETED_SUCCESS } from './action-types/admin-actions';
 
 const apiUrl = 'http://localhost:8000/token-auth/'
 const requestURL = 'http://localhost:8000/core/api/request/'
@@ -11,6 +11,16 @@ const successLogin = res => ({
 
 const getRequestSuccess = res => ({
     type: GET_REQUEST_SUCCESS,
+    res
+})
+
+const getApprovedSuccess = res => ({
+    type: GET_APPROVED_SUCCESS,
+    res
+})
+
+const getCompletedSuccess = res => ({
+    type: GET_COMPLETED_SUCCESS,
     res
 })
 
@@ -43,6 +53,10 @@ export const addDate = (date, type) => ({
     }
 })
 
+export const closeDialog = () => ({
+    type: CLOSE_DIALOG
+})
+
 export const editRequest = (res, token) => {
     return (dispatch)=>{
       axios.patch(requestURL + 'submit/' + res.id + '/',
@@ -73,6 +87,18 @@ export const handleLogin= (details)=>{
                 dispatch(getRequestSuccess(res))
             })
 
+        )
+        .then(
+            axios.get(requestURL + 'approved')
+            .then(res=>{
+                dispatch(getApprovedSuccess(res))
+            })
+        )
+        .then(
+            axios.get(requestURL + 'completed')
+            .then(res=>{
+                dispatch(getCompletedSuccess(res))
+            })
         )
         .catch(error=>{
             throw(error);

@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Loan(props) {
+function CompletedLoans(props) {
   const classes = useStyles();
   const [data, setData] = useState({hits:[]})
 
@@ -40,7 +40,7 @@ function Loan(props) {
   return (
 
     <React.Fragment>
-      <Title>Loan Requests</Title>
+      <Title>Completed Loans</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -53,7 +53,7 @@ function Loan(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {[...props.all_requests.data].map(row => (
+          {[...props.all_requests].map(row => (
             <TableRow key={row.id}>
               <TableCell>
 
@@ -91,7 +91,7 @@ function Loan(props) {
 const mapStateToProps = (state)=>{
   console.log(state.adminReducer)
     return{
-        all_requests: state.adminReducer.all_requests,
+        all_requests: state.adminReducer.completed_loans,
         token: state.adminReducer.token
     }
 }
@@ -102,4 +102,4 @@ const mapDispatchToProps = (dispatch)=>{
         submitRequest: (cart)=>{dispatch(submitRequest(cart))}
     }*/
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Loan)
+export default connect(mapStateToProps, mapDispatchToProps)(CompletedLoans)

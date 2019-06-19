@@ -23,6 +23,8 @@ import RequestDialog from './RequestDialog'
 //import Chart from './Chart';
 //import Deposits from './Deposits';
 import Loan from './Loan';
+import PendingLoan from './PendingLoans';
+import CompletedLoan from './CompletedLoans'
 
 function MadeWithLove() {
   return (
@@ -117,7 +119,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Dashboard() {
+function Dashboard(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -127,7 +129,7 @@ function Dashboard() {
     setOpen(false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
+  console.log(props.test)
   return (
     <div className={classes.root}>
 
@@ -175,15 +177,15 @@ function Dashboard() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
+            <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
-                
+                <CompletedLoan/>
               </Paper>
             </Grid>
             {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
+            <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
-              
+                <PendingLoan/>
               </Paper>
             </Grid>
             {/* Recent Orders */}
@@ -205,6 +207,7 @@ function Dashboard() {
 const mapStateToProps = (state)=>{
   console.log(state.adminReducer)
     return{
+        test: state.adminReducer,
         all_requests: state.adminReducer.all_requests,
         token: state.adminReducer.token
     }

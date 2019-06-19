@@ -1,7 +1,7 @@
 import 'date-fns';
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { addRequestApproverName, addApprovalCompletion, addDate, editRequest } from './actions/adminActions'
+import { addRequestApproverName, addApprovalCompletion, addDate, editRequest, closeDialog } from './actions/adminActions'
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -27,6 +27,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
+import Divider from '@material-ui/core/Divider';
 import {
   MuiPickersUtilsProvider,
   TimePicker,
@@ -94,7 +95,9 @@ function RequestDialog(props) {
   })
 
   return (
+
     <div>
+
       <Dialog
         open={props.request_detail['equipments'].length == [] ? false : true}
         TransitionComponent={Transition}
@@ -119,6 +122,7 @@ function RequestDialog(props) {
            >
            
             {props.request_detail.equipments.map(value => {
+              
               const labelId = `checkbox-list-secondary-label-${value}`;
               return (
                 <ListItem 
@@ -141,40 +145,44 @@ function RequestDialog(props) {
             })}
           </List>
 
+          <Divider variant="middle" />
+
           <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             
             <Grid item xs={12}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container className={classes.grid} justify="space-between">
-                <Grid item xs={12}>
+              <Grid container className={classes.grid} justify="space-around">
+               
                 <DatePicker
+                  disabled = {props.request_detail.borrow_date != null}
                   margin="normal"
                   id="mui-pickers-date"
                   label="Date of Loan"
-                  value={selectedDate}
+                  value={props.request_detail.borrow_date == null ? selectedDate : props.request_detail.borrow_date}
                   onChange={handleDateChangeBorrow}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
                 />
-                </Grid>
-                <Grid item xs={12}>
+                
+                
                 <DatePicker
+                disabled = {props.request_detail.return_date != null}
                   margin="normal"
                   id="mui-pickers-date"
-                  label="Date Returned"
-                  value={returnDate}
+                  label="Return By"
+                  value={props.request_detail.return_date == null ? null : props.request_detail.return_date}
                   onChange={handleDateChangeReturn}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
                 />
-                </Grid>
+                
               </Grid>
             </MuiPickersUtilsProvider>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={9}>
               <TextField
                 size = "small"
                 autoComplete="fname"
@@ -191,18 +199,57 @@ function RequestDialog(props) {
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControlLabel
-                control={<Checkbox value="Approved" color="primary"/>}
+                control={<Checkbox value="Approved" color="primary" disabled = {props.request_detail.approved}/>}
                 onChange = {(e) => props.handleTick(e)}
                 label="Approved"
               />
             </Grid>
+
+            <Divider variant="middle" />
+
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container className={classes.grid} justify="space-around">
+              <DatePicker
+                  disabled = {!props.request_detail.approved}
+                  margin="normal"
+                  id="mui-pickers-date"
+                  label="Date of Return"
+                  value={null}
+                  onChange={handleDateChangeReturn}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </Grid>
+              </MuiPickersUtilsProvider>
+
+
+            <Grid item xs={12} sm={9}>
+              <TextField
+                size = "small"
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="Items Returned To"
+                onChange = {(e) => props.handleApproverName(e)}
+                placeholder = {props.request_detail.approver_name}
+                disabled = {!props.request_detail.fulfilled || (props.request_detail.fulfilled && props.request_detail.approved)}
+                autoFocus
+              />
+            </Grid>
             <Grid item xs={12} sm={3}>
               <FormControlLabel
-                control={<Checkbox value="Completed" color="primary"/>}
+                control={<Checkbox value="Completed" color="primary" disabled = {!props.request_detail.fulfilled || (props.request_detail.fulfilled && props.request_detail.approved)}/>}
                 onChange = {(e) => props.handleTick(e)}
                 label="Completed"
               />
             </Grid>
+
+            <Divider variant="middle" />
+
             <Button
             type="submit"
             fullWidth
@@ -211,13 +258,14 @@ function RequestDialog(props) {
             className={classes.submit}
             onClick = {(e)=>handleSubmit(e)}
           >
-            Sign Up
+            {props.request_detail.approved ? 'Close Loan' : 'Open Loan'}
           </Button>
+
           </Grid>
         </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={()=>props.handleClose()} color="primary" >
             Close
           </Button>
           
@@ -241,8 +289,9 @@ const mapDispatchToProps= (dispatch)=>{
         handleApproverName: (e)=>{dispatch(addRequestApproverName(e.target.value))},
         handleTick: (e)=>{dispatch(addApprovalCompletion(e.target.value))},
         addDate: (date, type)=>{dispatch(addDate(date, type))},
-        editRequest: (e)=>{dispatch(editRequest(e))}
-        
+        editRequest: (e)=>{dispatch(editRequest(e))},
+        handleClose: ()=>{dispatch(closeDialog())}
+
     }
 }
 
