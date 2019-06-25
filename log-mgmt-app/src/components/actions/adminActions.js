@@ -1,5 +1,17 @@
 import axios from 'axios';
-import { LOGIN_SUCCESS, GET_REQUEST_SUCCESS, REQUEST_DETAIL_SUCCESS, ADD_APPROVER, ADD_TICKS, ADD_DATE, EDIT_REQUEST_SUCCESS, CLOSE_DIALOG, GET_APPROVED_SUCCESS, GET_COMPLETED_SUCCESS } from './action-types/admin-actions';
+import { 
+    LOGIN_SUCCESS, 
+    GET_REQUEST_SUCCESS, 
+    REQUEST_DETAIL_SUCCESS, 
+    ADD_APPROVER, 
+    ADD_TICKS, 
+    ADD_DATE, 
+    EDIT_REQUEST_SUCCESS, 
+    CLOSE_DIALOG, 
+    GET_APPROVED_SUCCESS, 
+    GET_COMPLETED_SUCCESS,
+    OPEN_DELETE_DIALOG,
+    DELETE_REQUEST_SUCCESS } from './action-types/admin-actions';
 
 const apiUrl = 'http://localhost:8000/token-auth/'
 const requestURL = 'http://localhost:8000/core/api/request/'
@@ -31,6 +43,11 @@ const requestDetailSuccess = res => ({
 
 const updateRequestSuccess = res => ({
     type: EDIT_REQUEST_SUCCESS,
+    res
+})
+
+const deleteRequestSuccess = res => ({
+    type: DELETE_REQUEST_SUCCESS,
     res
 })
 
@@ -70,6 +87,28 @@ export const editRequest = (res, token) => {
     }
 }
 
+export const deleteRequest = () => ({
+    type: OPEN_DELETE_DIALOG,
+    payload: {
+        open: true,
+        objectToDelete: 'request'
+    }
+})
+
+export const deleteRequestConfirm = (id, token) => {
+    return(dispatch)=>{
+        axios.delete(requestURL + id, 
+            {headers: {Authorization: "JWT " + token}}
+        )
+        .then(res=>{
+            console.log(res)
+            res.data = id
+            console.log(res)
+            console.log(id)
+            dispatch(deleteRequestSuccess(res))
+        })
+    }
+}
 
 export const handleLogin= (details)=>{
     

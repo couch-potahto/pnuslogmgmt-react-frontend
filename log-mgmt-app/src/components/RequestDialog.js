@@ -1,7 +1,8 @@
 import 'date-fns';
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { addRequestApproverName, addApprovalCompletion, addDate, editRequest, closeDialog } from './actions/adminActions'
+import { withStyles } from '@material-ui/core/styles';
+import { addRequestApproverName, addApprovalCompletion, addDate, editRequest, closeDialog, deleteRequest } from './actions/adminActions'
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -28,6 +29,13 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import Divider from '@material-ui/core/Divider';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import {
   MuiPickersUtilsProvider,
   TimePicker,
@@ -39,26 +47,33 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const useStyles = makeStyles(theme => ({
+const styles = makeStyles(theme => ({
   root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
+    margin: 0,
+    padding: theme.spacing(2),
   },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
   },
-  grid: {
-    width: '60%',
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
   },
 }));
+
+
 
 function RequestDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [returnDate, setReturnDate] = React.useState(new Date());
-  const classes = useStyles();
+  const classes = styles();
 
   function handleClickOpen() {
     setOpen(true);
@@ -89,6 +104,10 @@ function RequestDialog(props) {
     props.editRequest(props.request_detail, props.token);
   }
 
+  const handleDelete = () =>{
+    console.log(props.request_detail.id)
+    props.deleteRequest(props.request_detail.id, props.token);
+  }
 
   useEffect(() => {
     props.addDate(selectedDate, 'borrow')
@@ -99,25 +118,34 @@ function RequestDialog(props) {
     <div>
 
       <Dialog
+        fullScreen
         open={props.request_detail['equipments'].length == [] ? false : true}
         TransitionComponent={Transition}
         keepMounted
-        onClose={handleClose}
+        onClose={()=>props.handleClose()}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle id="alert-dialog-slide-title">Loan Detail</DialogTitle>
+      <AppBar className={classes.appBar}>
+          <Toolbar>
+            <Typography variant="h6" className={classes.title}>
+              Loan Detail
+            </Typography>
+            <Button color="secondary" onClick={handleDelete}>
+              <IconButton>
+                <DeleteIcon/>
+              </IconButton>
+            </Button>
+          </Toolbar>
+        </AppBar>
+        
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             Please confirm/fulfill the loan accordingly
           </DialogContentText>
           <List
            dense
-           subheader={
-             <ListSubheader component="div" id="nested-list-subheader">
-                Equipment Requested
-              </ListSubheader>
-            }
+           
            className={classes.root}
            >
            
@@ -137,7 +165,7 @@ function RequestDialog(props) {
                   <ListItemText secondary={`${value.weeks_borrowed} weeks`} />
                   <ListItemSecondaryAction>
                     <IconButton edge="end" aria-label="Delete">
-                      <DeleteIcon />
+                      <CloseIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -236,13 +264,12 @@ function RequestDialog(props) {
                 label="Items Returned To"
                 onChange = {(e) => props.handleApproverName(e)}
                 placeholder = {props.request_detail.approver_name}
-                disabled = {!props.request_detail.fulfilled || (props.request_detail.fulfilled && props.request_detail.approved)}
                 autoFocus
               />
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControlLabel
-                control={<Checkbox value="Completed" color="primary" disabled = {!props.request_detail.fulfilled || (props.request_detail.fulfilled && props.request_detail.approved)}/>}
+                control={<Checkbox value="Completed" color="primary" />}
                 onChange = {(e) => props.handleTick(e)}
                 label="Completed"
               />
@@ -260,7 +287,6 @@ function RequestDialog(props) {
           >
             {props.request_detail.approved ? 'Close Loan' : 'Open Loan'}
           </Button>
-
           </Grid>
         </form>
         </DialogContent>
@@ -268,7 +294,6 @@ function RequestDialog(props) {
           <Button onClick={()=>props.handleClose()} color="primary" >
             Close
           </Button>
-          
         </DialogActions>
         
       </Dialog>
@@ -290,7 +315,8 @@ const mapDispatchToProps= (dispatch)=>{
         handleTick: (e)=>{dispatch(addApprovalCompletion(e.target.value))},
         addDate: (date, type)=>{dispatch(addDate(date, type))},
         editRequest: (e)=>{dispatch(editRequest(e))},
-        handleClose: ()=>{dispatch(closeDialog())}
+        handleClose: ()=>{dispatch(closeDialog())},
+        deleteRequest: (id, token)=>{dispatch(deleteRequest(id, token))}
 
     }
 }

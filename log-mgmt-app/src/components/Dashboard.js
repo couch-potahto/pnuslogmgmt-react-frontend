@@ -25,6 +25,7 @@ import RequestDialog from './RequestDialog'
 import Loan from './Loan';
 import PendingLoan from './PendingLoans';
 import CompletedLoan from './CompletedLoans'
+import DeleteConfirmation from './DeleteConfirmation'
 
 function MadeWithLove() {
   return (
@@ -121,7 +122,7 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -196,6 +197,7 @@ function Dashboard(props) {
             </Grid>
           </Grid>
           <RequestDialog/>
+          <DeleteConfirmation/>
         </Container>
 
         <MadeWithLove />

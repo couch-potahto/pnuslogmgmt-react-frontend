@@ -7,7 +7,9 @@ import { LOGIN_SUCCESS,
         EDIT_REQUEST_SUCCESS, 
         CLOSE_DIALOG,
         GET_APPROVED_SUCCESS,
-        GET_COMPLETED_SUCCESS } from '../actions/action-types/admin-actions';
+        GET_COMPLETED_SUCCESS,
+        OPEN_DELETE_DIALOG,
+        DELETE_REQUEST_SUCCESS } from '../actions/action-types/admin-actions';
 
 const initState = {
 
@@ -15,10 +17,11 @@ const initState = {
     password: "",
     token: localStorage.getItem('token'),
     logged_in: false,
-    all_requests: [],
+    all_requests: {data: []},
     pending_loans: [],
     completed_loans: [],
     request_detail:{'equipments':[]},
+    delete_confirm: {open: false, objectToDelete: ""},
 
 }
 
@@ -35,7 +38,10 @@ const adminReducer= (state = initState, action)=>{
         }
     }
     if(action.type === GET_REQUEST_SUCCESS){
-        
+        console.log(action.res)
+        action.res.data = action.res.data.filter(function(obj){
+            return obj.approved == false && obj.fulfilled == false
+        })
         return{
             ...state,
             all_requests: action.res
@@ -145,10 +151,45 @@ const adminReducer= (state = initState, action)=>{
         }*/
 
     }
-
-    if(action.type === CLOSE_DIALOG){
+    if(action.type === OPEN_DELETE_DIALOG){
         return{
             ...state,
+            delete_confirm: {open: true, objectToDelete: 'request'}
+        }
+    }
+    if(action.type === CLOSE_DIALOG){
+        if(state.delete_confirm.objectToDelete == 'request'){
+            return{
+                ...state,
+                delete_confirm: {open: false, objectTodelete: ''}
+            }
+        }
+        else{
+            return{
+                ...state,
+                request_detail: {'equipments':[]}
+            }
+        }
+    }
+    if(action.type === DELETE_REQUEST_SUCCESS){
+        let new_all_requests = [...state.all_requests.data]
+        let new_pending_requests = [...state.pending_loans]
+        let new_complete_loans = [...state.completed_loans]
+        new_all_requests = new_all_requests.filter(function(obj){
+            return obj.id != action.res.data
+        })
+        new_pending_requests = new_pending_requests.filter(function(obj){
+            return obj.id != action.res.data
+        })
+        new_complete_loans = new_complete_loans.filter(function(obj){
+            return obj.id != action.res.data
+        })
+        return{
+            ...state,
+            all_requests: {data: new_all_requests},
+            pending_loans: new_pending_requests,
+            completed_loans: new_complete_loans,
+            delete_confirm: {open: false, objectTodelete: ''},
             request_detail: {'equipments':[]}
         }
     }
